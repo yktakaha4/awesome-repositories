@@ -1,2 +1,51 @@
-<h1>Collections#index</h1>
-<p>Find me in app/views/collections/index.html.erb</p>
+<div class="py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h2>Repository Collections</h2>
+        <hr class="mb-4"></div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="text-nowrap">Name</th>
+                <th class="text-nowrap">Author</th>
+                <th class="text-nowrap">Description</th>
+                <th class="text-nowrap">Repos.</th>
+                <th>
+                  <i class="fa fa-star"></i>
+                </th>
+                <th class="text-nowrap">Last updated</th>
+                <th class="text-nowrap">Last crawled
+                  <span class="show-popover" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Crawling is executed automatically on a regular basis.">
+                    <i class="fa fa-question-circle"></i>
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @collections.each do |collection| setting = collection.repository_collection_setting %>
+                <tr class="clickable-link" data-href="/collections/<%=collection.id.to_s%>">
+                  <td>
+                    <a target="_blank" rel="noopener" href="<%=setting.url%>"><i class="fa fa-external-link"></i></a>
+                  </td>
+                  <td><%= collection.name %></td>
+                  <td><%= collection.author %></td>
+                  <td><%= setting.description %></td>
+                  <td><%= collection.repositories_count %></td>
+                  <td><%= collection.star %></td>
+                  <td><%= time_ago_in_words(collection.git_updated_at) %></td>
+                  <td><%= time_ago_in_words(setting.crawled_at) %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

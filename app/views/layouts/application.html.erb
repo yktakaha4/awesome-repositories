@@ -1,14 +1,36 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AwesomeRepositories</title>
-    <%= csrf_meta_tags %>
+    <title>Awesome Repositories</title>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <%= csrf_meta_tags %>
+  
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
   <body>
+    <div class="py-5 text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <h1 class="display-3">Awesome&nbsp;<i class="fa fa-github"></i>&nbsp;Repositories</h1>
+            <p class="lead text-muted">Github repository collection search tool</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <%= yield %>
+    
+    <%= render 'layouts/footer' %>
+    
+    <script src="//code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
   </body>
 </html>

@@ -1,2 +1,93 @@
-<h1>Collections#show</h1>
-<p>Find me in app/views/collections/show.html.erb</p>
+<div class="py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h2>Repositories</h2>
+        <hr class="mb-4"> </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <form class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control keywords" placeholder="Keywords"> </div>
+          <div class="form-inline mt-2">
+            <div class="input-group">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="on" checked="">
+                <label class="form-check-label" for="exampleCheck1">Show Descriptions</label>
+              </div>
+            </div> &nbsp;
+            <div class="input-group">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="on" checked="">
+                <label class="form-check-label" for="exampleCheck1">Show Images</label>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mt-2">
+            <a class="btn btn-primary" href="#">Apply</a>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <p class="lead text-nowrap"><%= "#{@collection.author} / #{@collection.name}" %>&nbsp;
+        <a target="_blank" rel="noopener" href="<%=@setting.url%>"><i class="fa fa-external-link"></i></a>
+        </p>
+      </div>
+      <div class="col-md-8">
+        <%= paginate @repositories %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="text-nowrap">Name
+                  <%= link_to(content_tag(:i, "", class: "fa fa-sort"), collection_path(@collection)) %>
+                  <i class="fa fa-sort"></i>
+                </th>
+                <th class="text-nowrap">Author
+                  <i class="fa fa-sort"></i>
+                </th>
+                <th class="text-nowrap">Categories</th>
+                <th class="text-nowrap">License</th>
+                <th class="text-nowrap">
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-sort"></i>
+                </th>
+                <th class="text-nowrap">Last updated
+                  <i class="fa fa-sort"></i>
+                </th>
+                <th class="text-nowrap">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @repositories.each do |repository| %>
+                <tr>
+                  <td>
+                    <a target="_blank" rel="noopener" href="<%=repository.url%>"><i class="fa fa-external-link"></i></a>
+                  </td>
+                  <td><%= repository.name %></td>
+                  <td><%= repository.author %></td>
+                  <td><%= repository.categories.map{|c| c.title }.join(", ") %></td>
+                  <td><%= repository.license %></td>
+                  <td><%= repository.star %></td>
+                  <td><%= time_ago_in_words(repository.git_updated_at) %></td>
+                  <td><%= repository.description %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-12 text-right">
+        <%= paginate @repositories %>
+      </div>
+    </div>
+  </div>
+</div>
