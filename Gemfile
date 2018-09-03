@@ -44,6 +44,7 @@ gem 'dotenv-rails'
 gem 'bootstrap', '~> 4.0.0'
 gem 'font-awesome-rails'
 gem 'kaminari'
+gem 'jquery-ui-rails'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

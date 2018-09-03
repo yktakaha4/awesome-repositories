@@ -7,9 +7,9 @@
     </div>
     <div class="row">
       <div class="col-12">
-        <form class="form-group">
+        <form class="form-group" method="get" action="<%= collection_path(@collection) %>">
           <div class="input-group">
-            <input type="text" class="form-control keywords" placeholder="Keywords"> </div>
+            <input type="text" name="keywords" class="form-control autocomplete-keywords" placeholder="Keywords"> </div>
           <div class="form-inline mt-2">
             <div class="input-group">
               <div class="form-check">
@@ -25,7 +25,7 @@
             </div>
           </div>
           <div class="input-group mt-2">
-            <a class="btn btn-primary" href="#">Apply</a>
+            <button class="btn btn-primary" href="#">Apply</button>
           </div>
         </form>
       </div>

@@ -1,5 +1,8 @@
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui
+//= require popper
+//= require bootstrap
 //= require turbolinks
 //= require_tree .
 
@@ -14,4 +17,9 @@ $(function() {
   $(".clickable-link a").on("click", function(e) {
     e.stopPropagation();
   });
+  
+  $(".autocomplete-keywords").autocomplete({
+    source: ["hohohoho", "bakabon", "chou"]
+  });
+  
 });
