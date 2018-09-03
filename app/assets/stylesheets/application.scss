@@ -44,12 +44,11 @@ $headings-font-weight: 200;
 $lead-font-size:   1.30rem;
 
 
-
-
-@import "jquery-ui/theme.css";
-@import "jquery-ui/autocomplete.css";
+@import "jquery-ui/core";
+@import "jquery-ui/theme";
+@import "jquery-ui/autocomplete";
 @import 'bootstrap';
-@import "font-awesome";
+@import 'font-awesome';
 
 html,body {
    height:100%;
@@ -140,4 +139,32 @@ html,body {
     content: ' ';
     background: linear-gradient($body-bg, transparentize($body-bg, 0.2),transparentize($body-bg, 0.9),transparentize($body-bg, 1));
 	}
+}
+
+
+/* autocomplete */
+.ui-autocomplete {
+  list-style-type: none;
+  padding: 0;
+  border-radius: 0.3em;
+  
+  .ui-menu-item {
+    .ui-menu-item-wrapper {
+      padding: 0.3em;
+      border-radius: 0.3em;
+    }
+    .ui-menu-item-wrapper.ui-state-active {
+    color: theme-color("light");
+      border-color: theme-color("secondary");
+      background-color: theme-color("secondary");
+    }
+  }
+}
+
+.tagit {
+  .tagit-choice {
+    color: theme-color("light");
+    background-color: theme-color("secondary");
+    border-color: theme-color("secondary");
+  }
 }
