@@ -147,6 +147,8 @@ html,body {
   list-style-type: none;
   padding: 0;
   border-radius: 0.3em;
+  overflow-y: auto;
+  max-height: 15em;
   
   .ui-menu-item {
     .ui-menu-item-wrapper {
