@@ -14,11 +14,7 @@ class CollectionsController < ApplicationController
     @param_order = %w(name author license star last_updated).include?(params[:order]) ? params[:order] : nil
     @param_direction = %w(asc desc).include?(params[:direction]) ? params[:direction] : nil
     if !@param_order.nil? && !@param_direction.nil? then
-      if @param_order == "last_updated" then
-        order = "git_updated_at"
-      else
-        order = @param_order
-      end
+      order = (@param_order == "last_updated") ? "git_updated_at" : @param_order
       direction = @param_direction
     else
       order = "star"
@@ -62,41 +58,37 @@ class CollectionsController < ApplicationController
       end
     end
 
-    @repositories = @collection.repositories
-        .includes(:categories)
-        .order("#{order} #{direction}, 1")
-        
-    if keyword_names.length > 0 then
-      @repositories = @repositories.where(name: keyword_names)
-    end
-    
-    if keyword_authors.length > 0 then
-      @repositories = @repositories.where(author: keyword_authors)
-    end
-    
-    if keyword_licenses.length > 0 then
-      @repositories = @repositories.where(license: keyword_licenses)
-    end
-    
+    @repositories = @collection.repositories.includes(:categories)
+    @repositories = @repositories.where(name: keyword_names) if keyword_names.length > 0
+    @repositories = @repositories.where(author: keyword_authors) if keyword_authors.length > 0
+    @repositories = @repositories.where(:categories => { :title => keyword_categories }) if keyword_categories.length > 0
+    @repositories = @repositories.where(license: keyword_licenses) if keyword_licenses.length > 0
+
     if keyword_descriptions.length > 0 then
       like_query = keyword_descriptions.length.times.map{|d| "LOWER(description) LIKE LOWER(?)" }.join(" OR ")
       like_params = keyword_descriptions.map{|d| "%" + d.gsub(/[%_]/, '\\\\\0') + "%" }
       @repositories = @repositories.where([like_query] + like_params)
     end
     
-    if keyword_categories.length > 0 then
-      @repositories = @repositories.where(:categories => { :title => keyword_categories })
-    end
-
     @setting = @collection.repository_collection_setting
     @repositories_count = @repositories.count
     @repositories_total_count = @collection.repositories.count
     
-    @repositories = @repositories.page(@param_page)
     @param_queries = []
     @param_permitted = params
-        .permit(:order, :direction, item: [{keywords: []}])
+        .permit(:id, :order, :direction, item: [{keywords: []}])
         .merge({:item => {:keywords => @param_keywords}})
+    
+    @repository_paginate = @repositories.order("#{order} #{direction}, 1").page(@param_page)
+    if keyword_categories.length > 0 then
+      @repositories = Repository
+          .where(id: @repository_paginate.pluck(:id))
+          .includes(:categories)
+          .order("#{order} #{direction}, 1")
+    else
+      @repositories = @repository_paginate
+    end
+    
   end
   
 end
