@@ -5,3 +5,5 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+User.new(name: ENV["APP_ADMIN_USERNAME"], email: ENV["APP_ADMIN_EMAIL"], password: ENV["APP_ADMIN_PASSEORD"]).save if !User.find_by(name: ENV["APP_ADMIN_USERNAME"])
