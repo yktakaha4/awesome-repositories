@@ -4,8 +4,6 @@
       <div class="col-12">
         <h2>Repositories</h2>
         <hr class="mb-4"> </div>
-    </div>
-    <div class="row">
       <div class="col-12">
         <form class="form-group filter-form" method="get" action="<%= collection_path(@collection) %>">
           <div class="input-group">
@@ -24,16 +22,17 @@
       </div>
     </div>
     <div class="row">
+      <div class="col-12">
+        <p><a href="/">Back to repository collections</a></p>
+      </div>
       <div class="col-md-4">
         <p class="lead text-nowrap"><%= "#{@collection.author} / #{@collection.name} (#{@repositories_count} / #{@repositories_total_count})" %>&nbsp;
-        <a target="_blank" rel="noopener" href="<%=@setting.url%>"><i class="fa fa-external-link"></i></a>
+          <a target="_blank" rel="noopener" href="<%=@setting.url%>"><i class="fa fa-external-link"></i></a>
         </p>
       </div>
       <div class="col-md-8">
         <%= paginate @repository_paginate %>
       </div>
-    </div>
-    <div class="row">
       <div class="col-12">
         <div class="table-responsive">
           <table class="table">
