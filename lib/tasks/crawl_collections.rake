@@ -42,7 +42,11 @@ namespace :crawl_collections do
             
             repos_col.name = git_repos_col[:name]
             repos_col.author = git_repos_col[:owner][:login]
-            repos_col.license = git_repos_col[:license][:name]
+            if (git_repos_col[:license].nil?) 
+              repos_col.license = "Unknown"
+            else
+              repos_col.license = git_repos_col[:license][:name]
+            end            
             repos_col.star = git_repos_col[:stargazers_count]
             repos_col.git_updated_at = git_repos_col[:updated_at]
             repos_col.crawled_at = now
