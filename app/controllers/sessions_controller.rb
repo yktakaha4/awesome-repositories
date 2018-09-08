@@ -6,7 +6,6 @@ class SessionsController < ApplicationController
     name = params[:session][:id].downcase
     password = params[:session][:password]
     if login(name, password)
-      flash[:success] = 'Login succeeded.'
       redirect_to settings_url
     else
       flash.now[:danger] = 'Login failed.'
@@ -16,8 +15,7 @@ class SessionsController < ApplicationController
 
   def destroy
     session[:user_id] = nil
-    flash[:success] = 'Logged out.'
-    redirect_to root_url
+    redirect_to login_url
   end
 
   private

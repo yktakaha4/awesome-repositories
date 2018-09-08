@@ -1,9 +1,9 @@
 class RepositoryCollection < ApplicationRecord
   belongs_to :repository_collection_setting
-  has_many :repositories
+  has_many :repositories, dependent: :destroy
   
   def repositories_count
-    RepositoryCollection.first.repositories.count
+    repositories.count
   end
   
   def self.all_enabled

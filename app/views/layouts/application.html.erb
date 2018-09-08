@@ -16,6 +16,9 @@
   </head>
 
   <body>
+    <% if logged_in? %>
+      <%= render 'layouts/navbar' %>
+    <% end %>
     <div class="py-5 text-center">
       <div class="container">
         <div class="row">

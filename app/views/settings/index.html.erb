@@ -1,2 +1,92 @@
-<h1>Settings#index</h1>
-<p>Find me in app/views/settings/index.html.erb</p>
+<div class="py-5" >
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h2>Settings</h2>
+        <hr class="mb-4"> </div>
+      <div class="col-lg-5">
+        <%= render 'layouts/flash_messages' %>
+      </div>
+      <div class="col-12">
+        <%= form_for(@new_setting, :url => settings_path, :html => { :method => "post", :class => "form-group" }) do |f| %>
+          <div class="input-group">
+            Repository Collection URL
+          </div>
+          <div class="input-group">
+            <%= f.text_field(:url, :class => "form-control") %>
+          </div>
+          <div class="input-group mt-2">
+            <%= f.submit("Add", :class => "btn btn-primary") %>
+          </div>
+        <% end %>
+      </div>
+      <div class="col-12">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="text-nowrap">#</th>
+                <th class="text-nowrap">URL</th>
+                <th class="text-nowrap">Description</th>
+                <th style="width: 3em;">Su</th>
+                <th style="width: 3em;">Mo</th>
+                <th style="width: 3em;">Tu</th>
+                <th style="width: 3em;">We</th>
+                <th style="width: 3em;">Th</th>
+                <th style="width: 3em;">Fr</th>
+                <th style="width: 3em;">Sa</th>
+                <th class="text-nowrap">Last crawled</th>
+                <th class="text-nowrap">Status</th>
+                <th class="text-nowrap">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @settings.each do |setting| %>
+                <tr>
+                  <td class="align-middle"><%= setting.id %></td>
+                  <td class="align-middle text-nowrap"><%= setting.url %></td>
+                  <td class="align-middle">
+                    <%=text_field(nil, :description, :value => setting.description, :class => "form-control form-control-sm", :form => form_id(setting), :id => nil)%>
+                  </td>
+                  <td class="text-center align-middle">
+                    <%=check_box(nil, :schedule_su, :checked => checked_weeks(setting, 0), :class => "form-check", :form => form_id(setting), :id => nil)%>
+                  </td>
+                  <td class="text-center align-middle">
+                    <%=check_box(nil, :schedule_mo, :checked => checked_weeks(setting, 1), :class => "form-check", :form => form_id(setting), :id => nil)%>
+                  <td class="text-center align-middle">
+                    <%=check_box(nil, :schedule_tu, :checked => checked_weeks(setting, 2), :class => "form-check", :form => form_id(setting), :id => nil)%>
+                  <td class="text-center align-middle">
+                    <%=check_box(nil, :schedule_we, :checked => checked_weeks(setting, 3), :class => "form-check", :form => form_id(setting), :id => nil)%>
+                  <td class="text-center align-middle">
+                    <%=check_box(nil, :schedule_th, :checked => checked_weeks(setting, 4), :class => "form-check", :form => form_id(setting), :id => nil)%>
+                  <td class="text-center align-middle">
+                    <%=check_box(nil, :schedule_fr, :checked => checked_weeks(setting, 5), :class => "form-check", :form => form_id(setting), :id => nil)%>
+                  <td class="text-center align-middle">
+                    <%=check_box(nil, :schedule_sa, :checked => checked_weeks(setting, 6), :class => "form-check", :form => form_id(setting), :id => nil)%>
+                  <td class="align-middle"><%=setting.crawled_at%></td>
+                  <td class="align-middle"><%=setting.status%></td>
+                  <td class="align-middle">
+                    <%= form_tag(setting_path(setting), :id => form_id(setting), :method => "post" ) do %>
+                      <input type="hidden" name="_method">
+                      <div class="btn-group">
+                        <a class="btn-sm btn-outline-primary a-button" href="#" data-method="post" data-action="<%=setting_path(setting.id)%>/crawl">
+                          <i class="fa fa-bolt"></i>
+                        </a>
+                        <a class="btn-sm btn-outline-primary a-button" href="#" data-method="put" data-action="<%=setting_path(setting.id)%>">
+                          <i class="fa fa-wrench"></i>
+                        </a>
+                        <a class="btn-sm btn-outline-primary a-button" href="#" data-method="delete" data-action="<%=setting_path(setting.id)%>">
+                          <i class="fa fa-times-circle"></i>
+                        </a>
+                      </div>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

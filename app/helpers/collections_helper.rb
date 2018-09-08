@@ -27,4 +27,9 @@ module CollectionsHelper
     end
     return "fa fa-sort"
   end
+  
+  def checked_weeks(setting, num)
+    setting.crawl_schedule_weeks[num] == "1"
+  end
+  
 end

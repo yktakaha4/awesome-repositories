@@ -1,19 +1,16 @@
 class CollectionsController < ApplicationController
+  before_action :correct_collection, only: [:show]
+  
   def index
     @collections = RepositoryCollection.all_enabled
   end
 
   def show
     @id = params[:id]
-    @collection = RepositoryCollection.find_by_id(@id)
-    if @collection.nil?
-      redirect_to root_path
-      return
-    end
-
+    
     @param_order = %w(name author license star last_updated).include?(params[:order]) ? params[:order] : nil
     @param_direction = %w(asc desc).include?(params[:direction]) ? params[:direction] : nil
-    if !@param_order.nil? && !@param_direction.nil? then
+    if !@param_order.nil? && !@param_direction.nil? 
       order = (@param_order == "last_updated") ? "git_updated_at" : @param_order
       direction = @param_direction
     else
@@ -24,8 +21,8 @@ class CollectionsController < ApplicationController
     @param_page = params[:page]
 
     keywords = []
-    if params.has_key?(:item) then
-      if params[:item].has_key?(:keywords) then
+    if params.has_key?(:item) 
+      if params[:item].has_key?(:keywords) 
         keywords = params[:item][:keywords]
       end
     end
@@ -38,20 +35,20 @@ class CollectionsController < ApplicationController
     keyword_categories = []
     keywords.each do |keyword|
       tuple = keyword.split(":", 2)
-      if tuple.length == 2 && keywords.length < 10 then
-        if tuple[0] == "Name" then
+      if tuple.length == 2 && keywords.length < 10 
+        if tuple[0] == "Name" 
           keyword_names.push(tuple[1])
           @param_keywords.push(keyword)
-        elsif tuple[0] == "Author" then
+        elsif tuple[0] == "Author" 
           keyword_authors.push(tuple[1])
           @param_keywords.push(keyword)
-        elsif tuple[0] == "Category" then
+        elsif tuple[0] == "Category" 
           keyword_categories.push(tuple[1])
           @param_keywords.push(keyword)
-        elsif tuple[0] == "License" then
+        elsif tuple[0] == "License" 
           keyword_licenses.push(tuple[1])
           @param_keywords.push(keyword)
-        elsif tuple[0] == "Description" then
+        elsif tuple[0] == "Description" 
           keyword_descriptions.push(tuple[1])
           @param_keywords.push(keyword)
         end
@@ -64,7 +61,7 @@ class CollectionsController < ApplicationController
     @repositories = @repositories.where(:categories => { :title => keyword_categories }) if keyword_categories.length > 0
     @repositories = @repositories.where(license: keyword_licenses) if keyword_licenses.length > 0
 
-    if keyword_descriptions.length > 0 then
+    if keyword_descriptions.length > 0 
       like_query = keyword_descriptions.length.times.map{|d| "LOWER(description) LIKE LOWER(?)" }.join(" OR ")
       like_params = keyword_descriptions.map{|d| "%" + d.gsub(/[%_]/, '\\\\\0') + "%" }
       @repositories = @repositories.where([like_query] + like_params)
@@ -80,7 +77,7 @@ class CollectionsController < ApplicationController
         .merge({:item => {:keywords => @param_keywords}})
     
     @repository_paginate = @repositories.order("#{order} #{direction}, 1").page(@param_page)
-    if keyword_categories.length > 0 then
+    if keyword_categories.length > 0 
       @repositories = Repository
           .where(id: @repository_paginate.pluck(:id))
           .includes(:categories)
@@ -90,5 +87,12 @@ class CollectionsController < ApplicationController
     end
     
   end
+  
+  def correct_collection
+    @collection = RepositoryCollection.find_by_id(params[:id])
+    unless @collection
+      redirect_to root_path
+    end
+  end  
   
 end

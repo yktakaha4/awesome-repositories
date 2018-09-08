@@ -26,18 +26,18 @@
               </tr>
             </thead>
             <tbody>
-              <% @collections.each do |collection| setting = collection.repository_collection_setting %>
+              <% @collections.includes(:repository_collection_setting).each do |collection| %>
                 <tr class="clickable-link" data-href="/collections/<%=collection.id.to_s%>">
                   <td>
-                    <a target="_blank" rel="noopener" href="<%=setting.url%>"><i class="fa fa-external-link"></i></a>
+                    <a target="_blank" rel="noopener" href="<%=collection.repository_collection_setting.url%>"><i class="fa fa-external-link"></i></a>
                   </td>
                   <td><%= collection.name %></td>
                   <td><%= collection.author %></td>
-                  <td><%= setting.description %></td>
+                  <td><%= collection.repository_collection_setting.description %></td>
                   <td><%= collection.repositories_count %></td>
                   <td><%= collection.star %></td>
                   <td><%= time_ago_in_words(collection.git_updated_at) %></td>
-                  <td><%= time_ago_in_words(setting.crawled_at) %></td>
+                  <td><%= time_ago_in_words(collection.repository_collection_setting.crawled_at) %></td>
                 </tr>
               <% end %>
             </tbody>
