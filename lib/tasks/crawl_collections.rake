@@ -167,15 +167,19 @@ namespace :crawl_collections do
     collection = RepositoryCollectionSetting
       .find(setting_id)
       .repository_collection
-
-    source = collection
-      .repositories
-      .includes(:categories)
-      .flat_map{|r| [
-        "Name:" + r.name, 
-        "Author:" + r.author, 
-        "License:" + r.license 
-        ] + r.categories.map{|c| "Category:" + c.title } }.uniq.sort
+      
+    if !collection.nil?
+      source = collection
+        .repositories
+        .includes(:categories)
+        .flat_map{|r| [
+          "Name:" + r.name, 
+          "Author:" + r.author, 
+          "License:" + r.license 
+          ] + r.categories.map{|c| "Category:" + c.title } }.uniq.sort
+    else
+      source = []
+    end
 
     File.write(
       Rails.root.join("public/autocomplete", "#{collection.id.to_s}.js"), 

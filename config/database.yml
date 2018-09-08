@@ -54,7 +54,7 @@ production:
   charset: utf8mb4
   collation: utf8mb4_bin
   encoding: utf8mb4
-  pool: 5
+  pool: 10
   database: awesome-repositories_production
   username: awesome-repositories
   password: <%= ENV['AWESOME-REPOSITORIES_DATABASE_PASSWORD'] %>
