@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180902034530) do
+ActiveRecord::Schema.define(version: 20180908142310) do
 
   create_table "categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin" do |t|
     t.string   "title",         limit: 191, null: false
@@ -67,8 +67,9 @@ ActiveRecord::Schema.define(version: 20180902034530) do
     t.string   "name"
     t.string   "email"
     t.string   "password_digest"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.datetime "last_logged_in_at"
   end
 
   add_foreign_key "categories", "repositories"

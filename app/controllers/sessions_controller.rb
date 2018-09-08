@@ -23,10 +23,12 @@ class SessionsController < ApplicationController
   def login(name, password)
     @user = User.find_by(name: name)
     if @user && @user.authenticate(password)
-      session[:user_id] = @user.id
-      return true
-    else
-      return false
+      @user.last_logged_in_at = @user.updated_at
+      if @user.save
+        session[:user_id] = @user.id
+        return true
+      end
     end
+    return false
   end
 end

@@ -63,7 +63,7 @@
                     <%=check_box(nil, :schedule_fr, :checked => checked_weeks(setting, 5), :class => "form-check", :form => form_id(setting), :id => nil)%>
                   <td class="text-center align-middle">
                     <%=check_box(nil, :schedule_sa, :checked => checked_weeks(setting, 6), :class => "form-check", :form => form_id(setting), :id => nil)%>
-                  <td class="align-middle"><%=setting.crawled_at%></td>
+                  <td class="align-middle"><%=simple_time(setting.crawled_at)%></td>
                   <td class="align-middle"><%=setting.status%></td>
                   <td class="align-middle">
                     <%= form_tag(setting_path(setting), :id => form_id(setting), :method => "post" ) do %>
