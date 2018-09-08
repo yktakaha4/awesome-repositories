@@ -170,3 +170,18 @@ html,body {
     border-color: theme-color("secondary");
   }
 }
+
+.clickable-table tbody th, .clickable-table tbody td {
+  cursor: pointer;
+}
+
+.app-title, .app-title:hover, .app-title:visited, .app-title:link, .app-title:active {
+  color: inherit;
+  text-decoration: none;
+  * {
+    opacity: inherit;
+  }
+}
+.app-title:hover {
+  opacity: 0.75;
+}
