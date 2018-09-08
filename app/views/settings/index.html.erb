@@ -44,7 +44,7 @@
               <% @settings.each do |setting| %>
                 <tr>
                   <td class="align-middle"><%= setting.id %></td>
-                  <td class="align-middle text-nowrap"><%= setting.url %></td>
+                  <td class="align-middle"><%= setting.url %></td>
                   <td class="align-middle">
                     <%=text_field(nil, :description, :value => setting.description, :class => "form-control form-control-sm", :form => form_id(setting), :id => nil)%>
                   </td>
