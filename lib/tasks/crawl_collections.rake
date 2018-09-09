@@ -181,13 +181,12 @@ namespace :crawl_collections do
           "Author:" + r.author, 
           "License:" + r.license 
           ] + r.categories.map{|c| "Category:" + c.title } }.uniq.sort
-    else
-      source = []
-    end
 
-    File.write(
-      Rails.root.join("public/autocomplete", "#{collection.id.to_s}.js"), 
-      "window.autocomplete_source = #{source.to_json.html_safe};")
+      File.write(
+        Rails.root.join("public/autocomplete", "#{collection.id.to_s}.js"), 
+        "window.autocomplete_source = #{source.to_json.html_safe};")
+    end
+    
   end
 
 end
