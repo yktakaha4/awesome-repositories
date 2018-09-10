@@ -46,10 +46,12 @@ namespace :crawl_collections do
     
             repos_col = RepositoryCollection.find_or_initialize_by(repository_collection_setting_id: repos_col_setting.id)
             if repos_col.git_updated_at == git_repos_col[:updated_at]
-              logger.info "latest repository collection: author/name=#{git_repos_col_url}"
-              repos_col.crawled_at = now
-              repos_col.save!
-              next
+              if repos_col_setting.status.Active?
+                logger.info "latest repository collection: author/name=#{git_repos_col_url}"
+                repos_col.crawled_at = now
+                repos_col.save!
+                next
+              end
             end
             
             repos_col.name = git_repos_col[:name]
