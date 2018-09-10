@@ -144,9 +144,9 @@ namespace :crawl_collections do
                 repos.save!
   
               rescue => e
-                logger.info "----- repository exception -----"
+                logger.error "----- repository exception -----"
                 puts e.message
-                logger.info "----- repository exception -----"
+                logger.error "----- repository exception -----"
               end
               
             end
@@ -175,8 +175,8 @@ namespace :crawl_collections do
         repos_col_setting.status = 8
         repos_col_setting.save!
       end
-      logger.info e
-      logger.info "failed crawling: now=#{now}, setting_id=#{setting_id}"
+      logger.error e
+      logger.error "failed crawling: now=#{now}, setting_id=#{setting_id}"
 
     end
     
