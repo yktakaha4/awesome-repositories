@@ -37,7 +37,7 @@ class SettingsController < ApplicationController
   end
 
   def crawl
-    if !@setting.status.running?
+    if !@setting.Running?
       Rake::Task["crawl_collections:crawl"].reenable
       Rake::Task["crawl_collections:crawl"].invoke(@setting.id.to_s)
       

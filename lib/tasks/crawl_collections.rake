@@ -145,7 +145,7 @@ namespace :crawl_collections do
   
               rescue => e
                 logger.error "----- repository exception -----"
-                puts e.message
+                logger.error e.message
                 logger.error "----- repository exception -----"
               end
               
@@ -156,6 +156,7 @@ namespace :crawl_collections do
               raise ActiveRecord::Rollback
             end
             
+            p repos_col.repositories.length
             if repos_col.repositories.length == 0
               repos_col_setting = RepositoryCollectionSetting.find(setting_id)
               repos_col_setting.status = 7
