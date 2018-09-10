@@ -9,7 +9,7 @@ class RepositoryCollection < ApplicationRecord
   def self.all_enabled
     RepositoryCollection
         .joins(:repository_collection_setting)
-        .where(repository_collection_settings: { status: "active" })
+        .where(repository_collection_settings: { status: [0, 1] })
         .order("git_updated_at desc")
   end
   
