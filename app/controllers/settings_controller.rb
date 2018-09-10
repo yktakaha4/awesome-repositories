@@ -23,7 +23,7 @@ class SettingsController < ApplicationController
             author: @repos_info.owner.login, 
             description:  "", 
             crawl_schedule_weeks: 7.times.map{"0"}.join,
-            status: "9")
+            status: 9)
         if setting.save
           flash.now[:success] = "Add succeeded as ##{setting.id} ."
           @new_setting = RepositoryCollectionSetting.new()
@@ -32,15 +32,12 @@ class SettingsController < ApplicationController
       else
         flash.now[:danger] = "Already added: #{@repos_info.html_url}"
       end
-    else
-      p "invalid..."
     end
     render :index
   end
 
   def crawl
-    p @setting.status
-    if @setting.status != 1
+    if !@setting.status.running?
       Rake::Task["crawl_collections:crawl"].reenable
       Rake::Task["crawl_collections:crawl"].invoke(@setting.id.to_s)
       
@@ -55,7 +52,6 @@ class SettingsController < ApplicationController
   end
 
   def update
-    p to_weeks_value
     if @setting.update(:description => params[:description], :crawl_schedule_weeks => to_weeks_value)
       flash[:success] = "Update succeeded ##{@setting.id} ."
       redirect_to settings_path
@@ -96,7 +92,6 @@ class SettingsController < ApplicationController
       begin
         uri = URI.parse(u)
         paths = uri.path.split("/")
-        p paths
         if paths.length == 3
           repos_url = "#{paths[paths.length - 2]}/#{paths[paths.length - 1]}"
           

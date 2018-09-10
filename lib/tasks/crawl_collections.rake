@@ -1,18 +1,30 @@
 namespace :crawl_collections do
   require 'octokit'
   require 'nokogiri'
-  
+  require 'logger'
+
   desc "crawl_if_scheduled"
-  task :crawl_if_scheduled do
-    puts "Hello World"
+  task :crawl_if_scheduled, ["setting_id"] => :environment do |task, args|
+    logger = Rails.logger
+    
+    now = DateTime.now
+    logger.info "start checking: now=#{now}"
+    RepositoryCollectionSetting.all.select{|s| 
+      s.crawl_schedule_weeks[DateTime.now.wday] == "1"
+    }.each{|s|
+      Rake::Task["crawl_collections:crawl"].invoke(s.id)
+    }
+    logger.info "end checking: now=#{now}"    
   end
   
   desc "crawl"
   task :crawl, ["setting_id"] => :environment do |task, args|
+    logger = Rails.logger
+
     now = DateTime.now
     setting_id = args.setting_id
     
-    p "start crawling: now=#{now}, setting_id=#{setting_id}"
+    logger.info "start crawling: now=#{now}, setting_id=#{setting_id}"
     RepositoryCollectionSetting.transaction do
       repos_col_setting = RepositoryCollectionSetting.find(setting_id)
       repos_col_setting.status = 1
@@ -34,7 +46,7 @@ namespace :crawl_collections do
     
             repos_col = RepositoryCollection.find_or_initialize_by(repository_collection_setting_id: repos_col_setting.id)
             if repos_col.git_updated_at == git_repos_col[:updated_at]
-              p "latest repository collection: author/name=#{git_repos_col_url}"
+              logger.info "latest repository collection: author/name=#{git_repos_col_url}"
               repos_col.crawled_at = now
               repos_col.save!
               next
@@ -73,7 +85,7 @@ namespace :crawl_collections do
                 name = paths[2]
                 description = parent_node.content.gsub(/^[\s\-]+|[\s\-]+$/, "")
                 
-                p "url: #{url.to_s}"
+                logger.info "url: #{url.to_s}"
                 
                 git_repos_url = "#{author}/#{name}"          
                 git_repos = client.repo git_repos_url
@@ -81,7 +93,7 @@ namespace :crawl_collections do
                 
                 repos = Repository.find_or_initialize_by(url: url, repository_collection_id: repos_col.id)
                 if repos.git_updated_at == git_repos[:updated_at]
-                  p "latest repository: url=#{url}"
+                  logger.info "latest repository: url=#{url}"
                   repos.crawled_at = now
                   repos.save!
                   next
@@ -132,9 +144,9 @@ namespace :crawl_collections do
                 repos.save!
   
               rescue => e
-                p "----- repository exception -----"
+                logger.info "----- repository exception -----"
                 puts e.message
-                p "----- repository exception -----"
+                logger.info "----- repository exception -----"
               end
               
             end
@@ -143,13 +155,19 @@ namespace :crawl_collections do
             unless destroyed_records.all?(&:destroyed?)
               raise ActiveRecord::Rollback
             end
+            
+            if repos_col.repositories.length == 0
+              repos_col_setting = RepositoryCollectionSetting.find(setting_id)
+              repos_col_setting.status = 7
+              repos_col_setting.save!
+            end
           end
           
         end
     
       end
       
-      p "finish crawling: now=#{now}, setting_id=#{setting_id}"    
+      logger.info "finish crawling: now=#{now}, setting_id=#{setting_id}"    
       
     rescue => e
       RepositoryCollectionSetting.transaction do
@@ -157,8 +175,8 @@ namespace :crawl_collections do
         repos_col_setting.status = 8
         repos_col_setting.save!
       end
-      p e
-      p "failed crawling: now=#{now}, setting_id=#{setting_id}"
+      logger.info e
+      logger.info "failed crawling: now=#{now}, setting_id=#{setting_id}"
 
     end
     
@@ -166,6 +184,8 @@ namespace :crawl_collections do
   
   desc "make autocomplete"
   task :make_autocomplete, ["setting_id"] => :environment do |task, args|
+    logger = Rails.logger
+
     setting_id = args.setting_id
 
     collection = RepositoryCollectionSetting

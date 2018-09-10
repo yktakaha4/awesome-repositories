@@ -1,4 +1,9 @@
-p "initializing application..."
+require 'logger'
+
+logger = Rails.logger
+
+logger.info "initializing application..."
+
 Rails.application.load_tasks
 
 RepositoryCollection.all_enabled.each do |collection|
@@ -6,8 +11,10 @@ RepositoryCollection.all_enabled.each do |collection|
   begin
     Rake::Task["crawl_collections:make_autocomplete"].reenable
     Rake::Task["crawl_collections:make_autocomplete"].invoke(id)  
+    logger.info "succeed to invoke: crawl_collections:make_autocomplete, id=#{id}"
   rescue
+   logger.info "failed to invoke: crawl_collections:make_autocomplete, id=#{id}"
   end
 
 end
-p "done."
+logger.info "done."
