@@ -46,7 +46,7 @@ namespace :crawl_collections do
     
             repos_col = RepositoryCollection.find_or_initialize_by(repository_collection_setting_id: repos_col_setting.id)
             if repos_col.git_updated_at == git_repos_col[:updated_at]
-              if repos_col_setting.status.Active?
+              if repos_col_setting.Active?
                 logger.info "latest repository collection: author/name=#{git_repos_col_url}"
                 repos_col.crawled_at = now
                 repos_col.save!
@@ -153,7 +153,7 @@ namespace :crawl_collections do
               
             end
   
-            destroyed_records = Repository.where("repository_collection_id = ? and crawled_at != ?", repos_col.id, now)
+            destroyed_records = Repository.where("repository_collection_id = ? and crawled_at != ?", repos_col.id, now).destroy_all
             unless destroyed_records.all?(&:destroyed?)
               raise ActiveRecord::RecordInvalid
             end
