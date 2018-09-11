@@ -1,7 +1,8 @@
 require 'logger'
 
-if ENV["APP_START_FROM"].nil? 
-  logger = Rails.logger
+logger = Rails.logger
+
+if ENV["APP_START_FROM"].nil?
   logger.info "initializing application..."
   
   Rails.application.load_tasks
@@ -17,6 +18,15 @@ if ENV["APP_START_FROM"].nil?
     end
 
   end
-  logger.info "done."
   
+  begin
+    MonitorMailer.send_monitor_mail.deliver!
+  rescue => e
+    logger.warn "failed to send mail..."
+    logger.warn e
+  end
+  
+  logger.info "done."
+else
+  logger.info "skip initializing."
 end

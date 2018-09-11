@@ -60,4 +60,15 @@ Rails.application.configure do
     Bullet.console = true
     Bullet.rails_logger = true
   end  
+  
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:              'smtp.gmail.com',
+    domain:               'gmail.com',
+    port:                 587,
+    user_name:            ENV["APP_MAIL_USERNAME"],
+    password:             ENV["APP_MAIL_PASSWORD"],
+    authentication:       'plain',
+    enable_starttls_auto: true
+  }
 end
