@@ -20,7 +20,7 @@ if ENV["APP_START_FROM"].nil?
   end
   
   begin
-    MonitorMailer.send_monitor_mail.deliver!
+    MonitorMailer.send_monitor_mail("Server startup").deliver!
   rescue => e
     logger.warn "failed to send mail..."
     logger.warn e

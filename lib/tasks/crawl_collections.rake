@@ -14,7 +14,14 @@ namespace :crawl_collections do
     }.each{|s|
       Rake::Task["crawl_collections:crawl"].invoke(s.id)
     }
-    logger.info "end checking: now=#{now}"    
+    logger.info "end checking: now=#{now}"
+    
+    begin
+      MonitorMailer.send_monitor_mail("Crawled by scheduler").deliver!
+    rescue => e
+      logger.warn "failed to send mail"
+      logger.warn e
+    end
   end
   
   desc "crawl"

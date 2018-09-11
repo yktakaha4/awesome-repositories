@@ -1,1 +1,23 @@
-html mail
+<h4>[Enviroment]</h4>
+<p><%=@env%></p>
+<h4>[Reason]</h4>
+<p><%=@reason%></p>
+<h4>[Server Date]</h4>
+<p><%=@now_date%></p>
+<h4>[Repository Collection Settings]</h4>
+<table border="1">
+  <tr>
+    <th>ID</th>
+    <th>URL</th>
+    <th>Crawled At</th>
+    <th>Status</th>
+  </tr>
+  <% @repository_collection_settings.each do |s| %>
+    <tr>
+      <td><%= s.id %></td>
+      <td><%= s.url %></td>
+      <td><%= s.crawled_at %></td>
+      <td><%= s.status %></td>
+    </tr>
+  <% end %>
+</table>
