@@ -155,7 +155,7 @@ namespace :crawl_collections do
   
             destroyed_records = Repository.where("repository_collection_id = ? and crawled_at != ?", repos_col.id, now)
             unless destroyed_records.all?(&:destroyed?)
-              raise ActiveRecord::Rollback
+              raise ActiveRecord::RecordInvalid
             end
             
             p repos_col.repositories.length
