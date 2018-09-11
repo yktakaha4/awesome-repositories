@@ -153,7 +153,9 @@ namespace :crawl_collections do
               
             end
   
-            destroyed_records = Repository.where("repository_collection_id = ? and crawled_at != ?", repos_col.id, now).destroy_all
+            destroyed_records = Repository.where("repository_collection_id = ? and crawled_at != ?", repos_col.id, now)
+              .includes(:categories)
+              .destroy_all
             unless destroyed_records.all?(&:destroyed?)
               raise ActiveRecord::RecordInvalid
             end
