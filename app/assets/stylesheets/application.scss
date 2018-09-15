@@ -185,3 +185,18 @@ html,body {
 .app-title:hover {
   opacity: 0.75;
 }
+
+.repos-image {
+  max-width: 10em;
+  max-height: 10em;
+}
+
+.word-wrap {
+  word-wrap : break-word;
+  overflow-wrap : break-word;
+  hyphens: auto;
+}
+
+.shorten-detail {
+  display: none;
+}

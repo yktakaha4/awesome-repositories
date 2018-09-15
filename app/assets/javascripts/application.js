@@ -16,7 +16,11 @@ $(window.document).on('turbolinks:load', function() {
     window.autocomplete_keywords = [];
   }
 
-  $(".show-popover").popover();
+  $(".long-text").shorten({ chars : 75 }).on('shorten::expand', function (e) {
+    var $target = $(e.target);
+    $target.find(".shorten-ellipses, .shorten-toggle").remove();
+    $target.text($target.text());
+  });
   
   $(".clickable-link").on("click", function(e) {
     window.location.href = $(e.target).closest("tr").attr("data-href");

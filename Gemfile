@@ -47,6 +47,8 @@ gem 'kaminari'
 gem 'jquery-ui-rails'
 gem 'activerecord-like'
 gem 'mail'
+gem 'cloudinary'
+gem 'fastimage'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -65,6 +67,7 @@ group :development do
   gem 'hirb-unicode'
 
   gem 'bullet'
+  gem 'brakeman'
 end
 
 group :production do

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,8 +14,8 @@
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag '//cdnjs.cloudflare.com/ajax/libs/tag-it/2.0/js/tag-it.min.js' %>
     <%= javascript_include_tag '//cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js' %>
+    <%= javascript_include_tag '//cdn.jsdelivr.net/npm/jquery-shorten@0.3.2/dist/jquery-shorten.min.js' %>
   </head>
-
   <body>
     <% if logged_in? %>
       <%= render 'layouts/navbar' %>

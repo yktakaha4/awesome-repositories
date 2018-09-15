@@ -50,38 +50,48 @@
                       collection_path(@collection, @param_permitted.merge(create_next_sort_params("author", @param_order, @param_direction)))) %>
                 </th>
                 <th class="text-nowrap">Categories</th>
-                <th class="text-nowrap">License
-                  <%= link_to(
-                      content_tag(:i, "", class: create_sort_icon_class("license", @param_order, @param_direction)), 
-                      collection_path(@collection, @param_permitted.merge(create_next_sort_params("license", @param_order, @param_direction)))) %>
-                </th>
                 <th class="text-nowrap">
                   <i class="fa fa-star"></i>
                   <%= link_to(
                       content_tag(:i, "", class: create_sort_icon_class("star", @param_order, @param_direction)), 
                       collection_path(@collection, @param_permitted.merge(create_next_sort_params("star", @param_order, @param_direction)))) %>
                 </th>
+                <th class="text-nowrap">License
+                  <%= link_to(
+                      content_tag(:i, "", class: create_sort_icon_class("license", @param_order, @param_direction)), 
+                      collection_path(@collection, @param_permitted.merge(create_next_sort_params("license", @param_order, @param_direction)))) %>
+                </th>
+                <th class="text-nowrap">Description</th>
+                <th class="text-nowrap">Image</th>
                 <th class="text-nowrap">Last updated
                   <%= link_to(
                       content_tag(:i, "", class: create_sort_icon_class("last_updated", @param_order, @param_direction)), 
                       collection_path(@collection, @param_permitted.merge(create_next_sort_params("last_updated", @param_order, @param_direction)))) %>
                 </th>
-                <th class="text-nowrap">Description</th>
               </tr>
             </thead>
             <tbody>
               <% @repositories.each do |repository| %>
                 <tr>
                   <td>
-                    <a target="_blank" rel="noopener" href="<%=repository.url%>"><i class="fa fa-external-link"></i></a>
+                    <a target="_blank" rel="noopener noreferrer" href="<%=repository.url%>"><i class="fa fa-external-link"></i></a>
                   </td>
                   <td class="table_cell_name"><%= repository.name %></td>
                   <td class="table_cell_author"><%= repository.author %></td>
-                  <td class="table_cell_categories"><%= repository.categories.map{|c| c.title }.join(", ") %></td>
+                  <td class="table_cell_categories word-wrap"><%= repository.categories.map{|c| c.title }.join(", ") %></td>
+                  <td><%= repository.star.to_s(:delimited) %></td>
                   <td class="table_cell_license"><%= repository.license %></td>
-                  <td><%= repository.star %></td>
+                  <td class="table_cell_description word-wrap"><p class="long-text"><%= repository.description %></p></td>
+                  <td class="text-center align-middle">
+                    <% if !repository.image_url.blank? %>
+                      <a target="_blank" rel="noopener noreferrer" href="<%=repository.image_url%>">
+                        <%= cl_image_tag("repos_images/#{@collection.author}_#{@collection.name}/#{repository.author}_#{repository.name}", :class => "repos-image") %>
+                      </a>
+                    <% else %>
+                      <i class="fa fa-image text-muted"></i>
+                    <% end %>
+                  </td>
                   <td><%= time_ago_in_words(repository.git_updated_at) %></td>
-                  <td class="table_cell_description"><%= repository.description %></td>
                 </tr>
               <% end %>
             </tbody>

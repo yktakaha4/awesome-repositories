@@ -119,15 +119,68 @@ namespace :crawl_collections do
                 repos.star = git_repos[:stargazers_count]
                 repos.git_updated_at = git_repos[:updated_at]
                 repos.description = description
-                repos.image_url = ""
                 repos.crawled_at = now
                 
+                git_repos_readme = client.readme git_repos_url, :accept => 'application/vnd.github.html'
+                git_repos_doc = Nokogiri::HTML(git_repos_readme)
+                begin
+                  image_url = git_repos_doc.css("img").map{|n|
+                    v = n.attributes["src"].value
+                    begin
+                      if URI.parse(v).scheme.nil?
+                        URI.join(url, v)
+                      else
+                        v
+                      end
+                    rescue
+                      v
+                    end
+                  }.sort{|a, b|
+                    if a.downcase.end_with?(".gif") || b.downcase.end_with?(".gif")
+                      a.downcase.end_with?(".gif") ? -1 : 1
+                    elsif a.match("\.[^.]+$").nil? || b.match("\.[^.]+$").nil?
+                      !a.match("\.[^.]+$").nil? ? -1 : 1
+                    else
+                      0
+                    end
+                  }.find{|u|
+                    size = FastImage.size(u)
+                    if !size.nil?
+                      size[0] >= 50 && size[1] >= 50
+                    else
+                      false
+                    end
+                  }
+                  
+                  public_id = "repos_images/#{repos_col.author}_#{repos_col.name}/#{repos.author}_#{repos.name}"
+                  if !image_url.nil?
+                    if image_url != repos.image_url
+                      logger.info "upload image: #{public_id}"
+                      Cloudinary::Uploader.upload(image_url, 
+                          :public_id => public_id, 
+                          :width => 200, :crop => :scale)
+                    else
+                      logger.info "image already uploaded: #{public_id}"
+                    end
+                  else
+                    if !repos.image_url.blank?
+                      logger.info "delete image: #{public_id}"
+                      Cloudinary::Uploader.destroy(public_id)
+                    end
+                  end
+                  repos.image_url = image_url
+
+                rescue
+                  logger.warn "failed to get image url..."
+                  repos.image_url = nil
+                end
+
                 category_node = parent_node
                 headers = ["h1", "h2", "h3", "h4", "h5", "h6", "h7"]
                 regex = Regexp.new headers.map{|h| "^" + h + "$"}.join("|")
                 category_titles = []
   
-                while(!category_node.nil? && category_node.name != "document")
+                while(!category_node.nil? ? category_node.name != "document" : false)
                   tag_name = category_node.name.downcase
                   
                   if headers.length > 0
@@ -155,6 +208,7 @@ namespace :crawl_collections do
               rescue => e
                 logger.error "----- repository exception -----"
                 logger.error e.message
+                logger.error e.backtrace.join("\n")
                 logger.error "----- repository exception -----"
               end
               
