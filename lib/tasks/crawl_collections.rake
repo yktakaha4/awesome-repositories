@@ -171,8 +171,9 @@ namespace :crawl_collections do
                   end
                   repos.image_url = image_url
 
-                rescue
+                rescue => e
                   logger.warn "failed to get image url..."
+                  logger.warn e.message
                   repos.image_url = nil
                 end
 
