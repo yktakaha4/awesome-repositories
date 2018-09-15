@@ -40,43 +40,44 @@ namespace :crawl_collections do
     
     begin
       RepositoryCollectionSetting.transaction do
-        RepositoryCollection.transaction(requires_new: true) do
-          Repository.transaction(requires_new: true) do
-            repos_col_setting = RepositoryCollectionSetting.find(setting_id)
-            repos_col_setting.crawled_at = now
-            repos_col_setting.status = 0
-            repos_col_setting.save!
-    
-            client = Octokit::Client.new login: ENV["OCTOKIT_LOGIN"], password: ENV["OCTOKIT_PASSWORD"]
-            git_repos_col_url = "#{repos_col_setting.author}/#{repos_col_setting.name}"
-            git_repos_col = client.repo git_repos_col_url
-    
-            repos_col = RepositoryCollection.find_or_initialize_by(repository_collection_setting_id: repos_col_setting.id)
-            if repos_col.git_updated_at == git_repos_col[:updated_at]
-              if repos_col_setting.Active?
-                logger.info "latest repository collection: author/name=#{git_repos_col_url}"
-                repos_col.crawled_at = now
-                repos_col.save!
-                next
-              end
+        repos_col_setting = RepositoryCollectionSetting.find(setting_id)
+        repos_col_setting.crawled_at = now
+        repos_col_setting.status = 0
+        repos_col_setting.save!
+
+        client = Octokit::Client.new login: ENV["OCTOKIT_LOGIN"], password: ENV["OCTOKIT_PASSWORD"]
+        git_repos_col_url = "#{repos_col_setting.author}/#{repos_col_setting.name}"
+        git_repos_col = client.repo git_repos_col_url
+        repos_col = RepositoryCollection.find_or_initialize_by(repository_collection_setting_id: repos_col_setting.id)
+
+        RepositoryCollection.transaction do
+          if repos_col.git_updated_at == git_repos_col[:updated_at]
+            if repos_col_setting.Active?
+              logger.info "latest repository collection: author/name=#{git_repos_col_url}"
+              repos_col.crawled_at = now
+              repos_col.save!
+              next
             end
-            
-            repos_col.name = git_repos_col[:name]
-            repos_col.author = git_repos_col[:owner][:login]
-            if (git_repos_col[:license].nil?) 
-              repos_col.license = "Unknown"
-            else
-              repos_col.license = git_repos_col[:license][:name]
-            end            
-            repos_col.star = git_repos_col[:stargazers_count]
-            repos_col.git_updated_at = git_repos_col[:updated_at]
-            repos_col.crawled_at = now
-            repos_col.save!
-    
-            readme = client.readme git_repos_col_url, :accept => 'application/vnd.github.html'
-            doc = Nokogiri::HTML(readme)
-            doc.css('a').each do |node|
-              begin
+          end
+
+          repos_col.name = git_repos_col[:name]
+          repos_col.author = git_repos_col[:owner][:login]
+          if (git_repos_col[:license].nil?) 
+            repos_col.license = "Unknown"
+          else
+            repos_col.license = git_repos_col[:license][:name]
+          end            
+          repos_col.star = git_repos_col[:stargazers_count]
+          repos_col.git_updated_at = git_repos_col[:updated_at]
+          repos_col.crawled_at = now
+          repos_col.save!
+  
+          readme = client.readme git_repos_col_url, :accept => 'application/vnd.github.html'
+          doc = Nokogiri::HTML(readme)
+
+          doc.css('a').each do |node|
+            begin
+              Repository.transaction do
                 attributes = node.attributes
                 url = URI.parse(attributes["href"].value)
                 paths = url.path.split("/")
@@ -155,7 +156,7 @@ namespace :crawl_collections do
                   public_id = "repos_images/#{repos_col.author}_#{repos_col.name}/#{repos.author}_#{repos.name}"
                   if !image_url.nil?
                     search_result = Cloudinary::Search.expression("public_id: #{public_id}").max_results(1).execute
-
+  
                     if search_result["total_count"] == 0 || (!repos.image_url.blank? && repos.image_url != image_url)
                       logger.info "upload image: #{public_id}"
                       Cloudinary::Uploader.upload(image_url, 
@@ -171,17 +172,18 @@ namespace :crawl_collections do
                     end
                   end
                   repos.image_url = image_url
-
+  
                 rescue => e
                   logger.warn "failed to get image url..."
                   logger.warn e.message
                   repos.image_url = nil
                 end
 
+
                 category_node = parent_node
-                headers = ["h1", "h2", "h3", "h4", "h5", "h6", "h7"]
-                regex = Regexp.new headers.map{|h| "^" + h + "$"}.join("|")
-                category_titles = []
+                  headers = ["h1", "h2", "h3", "h4", "h5", "h6", "h7"]
+                  regex = Regexp.new headers.map{|h| "^" + h + "$"}.join("|")
+                  category_titles = []
   
                 while(!category_node.nil? ? category_node.name != "document" : false)
                   tag_name = category_node.name.downcase
@@ -207,33 +209,32 @@ namespace :crawl_collections do
                 end
                 
                 repos.save!
-  
-              rescue => e
-                logger.error "----- repository exception -----"
-                logger.error e.message
-                logger.error e.backtrace.join("\n")
-                logger.error "----- repository exception -----"
               end
               
-            end
-  
-            destroyed_records = Repository.where("repository_collection_id = ? and crawled_at != ?", repos_col.id, now)
-              .includes(:categories)
-              .destroy_all
-            unless destroyed_records.all?(&:destroyed?)
-              raise ActiveRecord::RecordInvalid
+            rescue => e
+              logger.error "----- repository exception -----"
+              logger.error e.message
+              logger.error e.backtrace.join("\n")
+              logger.error "----- repository exception -----"
             end
             
-            p repos_col.repositories.length
-            if repos_col.repositories.length == 0
-              repos_col_setting = RepositoryCollectionSetting.find(setting_id)
-              repos_col_setting.status = 7
-              repos_col_setting.save!
-            end
           end
           
+          destroyed_records = Repository.where("repository_collection_id = ? and crawled_at != ?", repos_col.id, now)
+            .includes(:categories)
+            .destroy_all
+          unless destroyed_records.all?(&:destroyed?)
+            raise ActiveRecord::RecordInvalid
+          end
+
         end
-    
+
+        if repos_col.repositories.length == 0
+          repos_col_setting = RepositoryCollectionSetting.find(setting_id)
+          repos_col_setting.status = 7
+          repos_col_setting.save!
+        end
+
       end
       
       logger.info "finish crawling: now=#{now}, setting_id=#{setting_id}"    
