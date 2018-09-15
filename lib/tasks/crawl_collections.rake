@@ -77,7 +77,7 @@ namespace :crawl_collections do
 
           doc.css('a').each do |node|
             begin
-              Repository.transaction do
+              Repository.transaction(requires_new: true) do
                 attributes = node.attributes
                 url = URI.parse(attributes["href"].value)
                 paths = url.path.split("/")
