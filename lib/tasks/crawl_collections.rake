@@ -155,17 +155,20 @@ namespace :crawl_collections do
                   public_id = "repos_images/#{repos_col.author}_#{repos_col.name}/#{repos.author}_#{repos.name}"
                   if !image_url.nil?
                     if image_url != repos.image_url
-                      logger.info "upload image: #{public_id}"
-                      Cloudinary::Uploader.upload(image_url, 
-                          :public_id => public_id, 
-                          :width => 200, :crop => :scale)
+                      search_result = Cloudinary::Search.expression("public_id: #{public_id}").max_results(1).execute
+                      if search_result["total_count"].nil?
+                        logger.info "upload image: #{public_id}"
+                        Cloudinary::Uploader.upload(image_url, 
+                            :public_id => public_id, 
+                            :width => 200, :crop => :scale)
+                      end
                     else
                       logger.info "image already uploaded: #{public_id}"
                     end
                   else
                     if !repos.image_url.blank?
-                      logger.info "delete image: #{public_id}"
-                      Cloudinary::Uploader.destroy(public_id)
+                      logger.info "(dummy) delete image: #{public_id}"
+                      # Cloudinary::Uploader.destroy(public_id)
                     end
                   end
                   repos.image_url = image_url
