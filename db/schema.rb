@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180908142310) do
+ActiveRecord::Schema.define(version: 20180915112843) do
 
   create_table "categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin" do |t|
     t.string   "title",         limit: 191, null: false
@@ -29,7 +29,7 @@ ActiveRecord::Schema.define(version: 20180908142310) do
     t.integer  "star"
     t.datetime "git_updated_at"
     t.text     "description",              limit: 65535
-    t.string   "image_url"
+    t.text     "image_url",                limit: 65535
     t.datetime "crawled_at"
     t.integer  "repository_collection_id",               null: false
     t.datetime "created_at",                             null: false
