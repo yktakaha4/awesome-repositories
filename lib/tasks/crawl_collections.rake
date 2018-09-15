@@ -156,7 +156,7 @@ namespace :crawl_collections do
                   if !image_url.nil?
                     if image_url != repos.image_url
                       search_result = Cloudinary::Search.expression("public_id: #{public_id}").max_results(1).execute
-                      if search_result["total_count"].nil?
+                      if search_result["total_count"] == 0
                         logger.info "upload image: #{public_id}"
                         Cloudinary::Uploader.upload(image_url, 
                             :public_id => public_id, 
