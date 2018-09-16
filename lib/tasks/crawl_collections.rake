@@ -216,27 +216,28 @@ namespace :crawl_collections do
           logger.error e.backtrace.join("\n")
           logger.error "----- repository exception -----"
         end
-        
-        destroyed_records = Repository.where("repository_collection_id = ? and crawled_at != ?", repos_col.id, now)
-          .includes(:categories)
-          .destroy_all
-        logger.info "delete repositories: count=#{destroyed_records.length} now=#{now}"
-        unless destroyed_records.all?(&:destroyed?)
-          raise ActiveRecord::RecordInvalid
-        end
-        logger.info "delete succeeded..."        
-  
-        if repos_col.repositories.length == 0
-          repos_col_setting.status = 7
-          repos_col_setting.save!
-        else
-          repos_col_setting.status = 0
-          repos_col_setting.save!
-        end
-  
-        logger.info "finish crawling: now=#{now}, setting_id=#{setting_id}"    
-      
+
       end
+      
+      destroyed_records = Repository.where("repository_collection_id = ? and crawled_at != ?", repos_col.id, now)
+        .includes(:categories)
+        .destroy_all
+      logger.info "delete repositories: count=#{destroyed_records.length} now=#{now}"
+      unless destroyed_records.all?(&:destroyed?)
+        raise ActiveRecord::RecordInvalid
+      end
+      logger.info "delete succeeded..."        
+
+      if repos_col.repositories.length == 0
+        repos_col_setting.status = 7
+        repos_col_setting.save!
+      else
+        repos_col_setting.status = 0
+        repos_col_setting.save!
+      end
+
+      logger.info "finish crawling: now=#{now}, setting_id=#{setting_id}"    
+      
     rescue => e
       repos_col_setting = RepositoryCollectionSetting.find(setting_id)
       repos_col_setting.status = 8
