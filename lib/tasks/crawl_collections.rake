@@ -124,7 +124,7 @@ namespace :crawl_collections do
               v = n.attributes["src"].value
               begin
                 if URI.parse(v).scheme.nil?
-                  File.join(url, v)
+                  File.join(url, "blob/master", v)
                 else
                   v
                 end
@@ -171,7 +171,6 @@ namespace :crawl_collections do
           rescue => e
             logger.warn "failed to get image url..."
             logger.warn e.message
-            repos.image_url = nil
           end
 
           category_node = parent_node
