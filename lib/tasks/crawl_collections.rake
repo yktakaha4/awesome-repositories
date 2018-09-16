@@ -67,10 +67,12 @@ namespace :crawl_collections do
       repos_col.git_updated_at = git_repos_col[:updated_at]
       repos_col.crawled_at = now
       repos_col.save!
+      logger.info "saved repository collection: author/name=#{git_repos_col_url}"
 
       readme = client.readme git_repos_col_url, :accept => 'application/vnd.github.html'
       doc = Nokogiri::HTML(readme)
 
+      logger.info "crawling repository collection README.MD..."
       doc.css('a').each do |node|
         begin
           attributes = node.attributes
@@ -103,7 +105,8 @@ namespace :crawl_collections do
             repos.save!
             next
           end
-          
+
+          logger.info "crawling repository: url=#{url}"
           repos.url = url
           repos.name = name
           repos.author = author
@@ -119,6 +122,7 @@ namespace :crawl_collections do
           
           git_repos_readme = client.readme git_repos_url, :accept => 'application/vnd.github.html'
           git_repos_doc = Nokogiri::HTML(git_repos_readme)
+          logger.info "crawling repository README.MD..."
           begin
             image_url = git_repos_doc.css("img").map{|n|
               v = n.attributes["src"].value
@@ -150,6 +154,7 @@ namespace :crawl_collections do
             
             public_id = "repos_images/#{repos_col.author}_#{repos_col.name}/#{repos.author}_#{repos.name}"
             if !image_url.nil?
+              logger.info "image url: image_url=#{image_url} url=#{url}"
               search_result = Cloudinary::Search.expression("public_id: #{public_id}").max_results(1).execute
 
               if search_result["total_count"] == 0 || (!repos.image_url.blank? && repos.image_url != image_url)
@@ -173,6 +178,7 @@ namespace :crawl_collections do
             logger.warn e.message
           end
 
+          logger.info "crawling categories..."
           category_node = parent_node
             headers = ["h1", "h2", "h3", "h4", "h5", "h6", "h7"]
             regex = Regexp.new headers.map{|h| "^" + h + "$"}.join("|")
@@ -202,6 +208,7 @@ namespace :crawl_collections do
           end
           
           repos.save!
+          logger.info "saved categories: #{category_titles.join(", ")}"
 
         rescue => e
           logger.error "----- repository exception -----"
@@ -213,20 +220,20 @@ namespace :crawl_collections do
         destroyed_records = Repository.where("repository_collection_id = ? and crawled_at != ?", repos_col.id, now)
           .includes(:categories)
           .destroy_all
-          
+        logger.info "delete repositories: count=#{destroyed_records.length} now=#{now}"
         unless destroyed_records.all?(&:destroyed?)
           raise ActiveRecord::RecordInvalid
         end
+        logger.info "delete succeeded..."        
   
         if repos_col.repositories.length == 0
-          repos_col_setting = RepositoryCollectionSetting.find(setting_id)
           repos_col_setting.status = 7
+          repos_col_setting.save!
+        else
+          repos_col_setting.status = 0
           repos_col_setting.save!
         end
   
-        repos_col_setting.status = 0
-        repos_col_setting.save!
-        
         logger.info "finish crawling: now=#{now}, setting_id=#{setting_id}"    
       
       end
