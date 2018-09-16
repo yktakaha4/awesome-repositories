@@ -71,6 +71,18 @@ namespace :crawl_collections do
 
       readme = client.readme git_repos_col_url, :accept => 'application/vnd.github.html'
       doc = Nokogiri::HTML(readme)
+      
+      image_url_list = []
+      next_cursor = ""
+      while !next_cursor.nil?
+        cloudinary_result = Cloudinary::Search
+          .max_results(500)
+          .next_cursor(next_cursor)
+          .execute
+        image_url_list.push(*cloudinary_result["resources"].map{|r| r["public_id"] })
+        next_cursor = cloudinary_result["next_cursor"]
+      end
+      image_url_set = image_url_list.to_set
 
       logger.info "crawling repository collection README.MD..."
       doc.css('a').each do |node|
@@ -152,12 +164,12 @@ namespace :crawl_collections do
               end
             }
             
+            repos.image_url = image_url            
             public_id = "repos_images/#{repos_col.author}_#{repos_col.name}/#{repos.author}_#{repos.name}"
             if !image_url.nil?
               logger.info "image url: image_url=#{image_url} url=#{url}"
-              search_result = Cloudinary::Search.expression("public_id: #{public_id}").max_results(1).execute
 
-              if search_result["total_count"] == 0 || (!repos.image_url.blank? && repos.image_url != image_url)
+              if !image_url_set.include?(public_id) || (!repos.image_url.blank? && repos.image_url != image_url)
                 logger.info "upload image: #{public_id}"
                 Cloudinary::Uploader.upload(image_url, 
                     :public_id => public_id, 
@@ -171,7 +183,6 @@ namespace :crawl_collections do
                 # Cloudinary::Uploader.destroy(public_id)
               end
             end
-            repos.image_url = image_url
 
           rescue => e
             logger.warn "failed to get image url..."
