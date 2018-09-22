@@ -11,13 +11,15 @@ Docker にソースのディレクトリをマウントしているのでロー�
 $ docker-compose up --build
 ```
 
+新しくターミナルを開く。
+
 DB を作成する（初回のみ）。
 
 ```
 $ docker-compose run --rm app rails db:create
 ```
 
-DB を migrate する。
+DB を migrate する（初回のみ）。
 
 ```
 $ docker-compose run --rm app rails db:migrate
