@@ -41,7 +41,7 @@ gem 'nokogiri'
 gem 'dotenv-rails'
 
 # For UI
-gem 'bootstrap', '~> 4.0.0'
+gem 'bootstrap', '~> 4.1.2'
 gem 'font-awesome-rails'
 gem 'kaminari'
 gem 'jquery-ui-rails'
