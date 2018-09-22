@@ -1,24 +1,53 @@
 # README
 
+## RUN
+
+Rails + MySQL のセットを立ち上げる。
+`--build` は Docker Image をビルドするだけなので、初回だけでも OK。
+
+Docker にソースのディレクトリをマウントしているのでローカルのファイルを修正すると Docker 上で動いている側も修正される。
+
+```
+$ docker-compose up --build
+```
+
+DB を作成する（初回のみ）。
+
+```
+$ docker-compose run --rm app rails db:create
+```
+
+DB を migrate する。
+
+```
+$ docker-compose run --rm app rails db:migrate
+```
+
+Rails + MySQL のセットを終了。
+
+```
+$ docker-compose down
+```
+
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
 Things you may want to cover:
 
-* Ruby version
+- Ruby version
 
-* System dependencies
+- System dependencies
 
-* Configuration
+- Configuration
 
-* Database creation
+- Database creation
 
-* Database initialization
+- Database initialization
 
-* How to run the test suite
+- How to run the test suite
 
-* Services (job queues, cache servers, search engines, etc.)
+- Services (job queues, cache servers, search engines, etc.)
 
-* Deployment instructions
+- Deployment instructions
 
-* ...
+- ...
