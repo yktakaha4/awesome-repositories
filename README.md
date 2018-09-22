@@ -1,6 +1,6 @@
 # README
 
-## RUN
+## 実行
 
 Rails + MySQL のセットを立ち上げる。
 `--build` は Docker Image をビルドするだけなので、初回だけでも OK。
@@ -24,6 +24,10 @@ DB を migrate する（初回のみ）。
 ```
 $ docker-compose run --rm app rails db:migrate
 ```
+
+http://localhost:3000 にアクセスすると見れる。
+
+## 終了
 
 Rails + MySQL のセットを終了。
 
